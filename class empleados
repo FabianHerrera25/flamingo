@@ -1,0 +1,28 @@
+class Empleado {
+  final int idPersona;
+  final String nombre;
+  final String correo;
+  final String contraseña;
+  final String rol;
+  final String estatus;
+
+  Empleado({
+    required this.idPersona,
+    required this.nombre,
+    required this.correo,
+    required this.contraseña,
+    required this.rol,
+    required this.estatus,
+  });
+
+  factory Empleado.fromJson(Map<String, dynamic> json) {
+    return Empleado(
+      idPersona: json['idPersona'],
+      nombre: json['Nombre'],
+      correo: json['correo'],
+      contraseña: json['contraseña'],
+      rol: json['rol'],
+      estatus: json['estatus'],
+    );
+  }
+}

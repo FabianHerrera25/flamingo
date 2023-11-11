@@ -1,0 +1,65 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+void main() {
+  runApp(MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(
+        title: Text('Lista de Empleados'),
+      ),
+      body: EmpleadosListView(),
+    ),
+  ));
+}
+
+class EmpleadosListView extends StatefulWidget {
+  @override
+  _EmpleadosListViewState createState() => _EmpleadosListViewState();
+}
+
+class _EmpleadosListViewState extends State<EmpleadosListView> {
+  List<Empleado> empleados = [];
+
+  Future<void> fetchData() async {
+    final response = await http.get(Uri.parse('http:///'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      setState(() {
+        empleados = data.map((item) => Empleado.fromJson(item)).toList();
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: empleados.length,
+      itemBuilder: (context, index) {
+        final empleado = empleados[index];
+        return Card(
+          margin: EdgeInsets.all(8.0),
+          child: ListTile(
+            title: Text('ID: ${empleado.idPersona}'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Nombre: ${empleado.nombre}'),
+                Text('Correo: ${empleado.correo}'),
+                Text('Rol: ${empleado.rol}'),
+                Text('Estatus: ${empleado.estatus}'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

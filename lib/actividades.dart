@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tareas.dart';
 
-import 'package:flutter/material.dart';
-
 class DetallesTareaPage extends StatelessWidget {
   final Tarea tarea;
 

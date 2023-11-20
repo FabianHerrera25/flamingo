@@ -1,7 +1,8 @@
+// ignore: unnecessary_import
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'actividades.dart'; // Importa el archivo de detalles de tarea (tarea_detalle.dart)
 
-import 'package:flutter/material.dart';
 
 class TareasPage extends StatelessWidget {
   @override
@@ -53,22 +54,44 @@ class TareasListView extends StatelessWidget {
     // Agrega más tareas aquí
   ];
 
+
+  
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return ListView.builder(
       itemCount: tareas.length,
       itemBuilder: (context, index) {
-        final tarea = tareas[index];
-        return ListTile(
-          title: Text(tarea.nombreActividad),
-          subtitle: Text('Usuario Encargado: ${tarea.usuarioEncargado}'),
-          onTap: () {
+        final tarea = tareas [index];
+        return Card(
+          margin: EdgeInsets.all(8.0),
+          color: Color(0xFF4B9EDE),
+          child: ListTile(
+            contentPadding: EdgeInsets.all(10.0),
+            leading: Icon(Icons.assignment, color: Colors.white, size: 40,),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${tarea.nombreActividad}', style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              ),
+              Text(
+                '${tarea.usuarioEncargado}', style: TextStyle(
+                color: Colors.white,
+              ),
+              )
+              ],
+            ),
+            onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DetallesTareaPage(tarea: tarea),
               ),
             );
-          },
+            },
+          ),
         );
       },
     );

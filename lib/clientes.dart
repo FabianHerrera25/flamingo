@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ClientesPage extends StatelessWidget {
@@ -86,11 +87,30 @@ class ClientesListView extends StatelessWidget {
       itemCount: clientes.length,
       itemBuilder: (context, index) {
         final cliente = clientes[index];
-        return ListTile(
-          title: Text(cliente.nombre),
-          onTap: () {
-            _mostrarDetallesCliente(context, cliente);
-          },
+        return Card(
+          margin: EdgeInsets.all(8.0),
+          color: Color(0xFF4B9EDE),
+          child: ListTile(
+            contentPadding: EdgeInsets.all(10.0),
+            leading: Icon(CupertinoIcons.person_solid,  color: Colors.white, size: 50,),
+            title: Text(cliente.nombre, style: TextStyle(
+              color: Colors.white,
+            ),
+            ),
+            trailing: ElevatedButton(
+              onPressed: (){
+                _mostrarDetallesCliente(context, cliente);
+              },
+              style: ElevatedButton.styleFrom(
+              primary: Colors.white, // Cambia el color del botón aquí
+              ),
+              child: Text('Detalles',
+              style: TextStyle(
+                  color: Color(0xFF4B9EDE), // Cambia el color del texto del botón aquí
+                ),
+              ),
+            ),
+          ),
         );
       },
     );

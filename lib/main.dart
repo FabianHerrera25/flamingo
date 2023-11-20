@@ -1,4 +1,6 @@
+import 'package:flamingo/login.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'empleados.dart';
 import 'clientes.dart';
 import 'tareas.dart';
@@ -23,6 +25,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  void initState() {
+    super.initState();
+    _requestStoragePermission();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -30,20 +38,27 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
         child: Container(
+          alignment: Alignment.center,
           color: Color.fromARGB(255, 38, 78, 193),
           child: ListView(
             children: <Widget>[
               UserAccountsDrawerHeader(
                 accountName: Text('fabian ismael herrera koh'),
                 accountEmail: Text('splitter33@gmail.com'),
-                currentAccountPicture: CircleAvatar(
-                  backgroundColor: Color.fromRGBO(241, 72, 6, 1),
-                  child: Icon(Icons.person),
-                ),
-              ),
+                currentAccountPicture: Container(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircleAvatar (
+                    backgroundColor: Colors.white,
+                    radius: 50.0, // Ajusta el radio según sea necesario
+                    child: Icon(Icons.person, size: 50, color: Colors.blue),
+                  ),
+                  ),
+                  ),
+                  ),
               ListTile(
                 leading: Icon(Icons.people, color: Colors.white),
-                title: Text('perfil', style: TextStyle(color: Colors.white)),
+                title: Text('Perfil', style: TextStyle(color: Colors.white)),
                 onTap: () {},
               ),
               ListTile(
@@ -59,36 +74,40 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               ListTile(
-                  leading:
-                      Icon(Icons.group, color: Colors.white), // Icono empleados
-                  title:
-                      Text('Empleados', style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    Navigator.of(context).pop(); // Cerrar el menú
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => EmpleadosPage(),
-                      ),
-                    );
-                  }),
+                leading: Icon(Icons.group, color: Colors.white),
+                title: Text('Empleados', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.of(context).pop(); // Cerrar el menú
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => EmpleadosPage(),
+                    ),
+                  );
+                },
+              ),
               ListTile(
-                  leading:
-                      Icon(Icons.group, color: Colors.white), // Icono empleados
-                  title:
-                      Text('clientes', style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    Navigator.of(context).pop(); // Cerrar el menú
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ClientesPage(),
-                      ),
-                    );
-                  }),
+                leading: Icon(Icons.group, color: Colors.white),
+                title: Text('Clientes', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.of(context).pop(); // Cerrar el menú
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ClientesPage(),
+                    ),
+                  );
+                },
+              ),
               ListTile(
-                leading: Icon(Icons.people, color: Colors.white),
-                title: Text('cartera clientes',
-                    style: TextStyle(color: Colors.white)),
-                onTap: () {},
+                leading: Icon(Icons.group, color: Colors.white),
+                title: Text('Login', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.of(context).pop(); // Cerrar el menú
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => LoginPage(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -96,5 +115,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(),
     );
+  }
+
+  Future<void> _requestStoragePermission() async {
+    var status = await Permission.storage.request();
+    if (status != PermissionStatus.granted) {
+      // Puedes mostrar un diálogo o mensaje al usuario para informar que se requieren permisos.
+      print("Permiso de almacenamiento no otorgado");
+    }
   }
 }

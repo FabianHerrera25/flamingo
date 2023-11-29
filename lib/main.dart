@@ -1,5 +1,6 @@
 import 'package:flamingo/login.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'empleados.dart';
 import 'clientes.dart';
@@ -27,7 +28,65 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _requestStoragePermission();
+    _checkAndRequestStoragePermission();
+  }
+
+  Future<void> _checkAndRequestStoragePermission() async {
+    var status = await Permission.storage.status;
+
+    if (status.isGranted) {
+      // El permiso ya está concedido, continuar abriendo la aplicación
+      _openApp();
+    } else {
+      // Solicitar el permiso y mostrar el diálogo después de solicitarlo
+      await _requestStoragePermission();
+    }
+  }
+
+  Future<void> _requestStoragePermission() async {
+    var status = await Permission.storage.request();
+    if (status == PermissionStatus.denied) {
+      // Si el usuario vuelve a denegar el permiso, mostrar el diálogo solicitando permisos
+      _showPermissionDeniedDialog();
+    } else if (status != PermissionStatus.granted) {
+      // Puedes mostrar un diálogo o mensaje al usuario para informar que se requieren permisos.
+      print("Permiso de almacenamiento no otorgado");
+    } else {
+      // El permiso fue concedido, continuar abriendo la aplicación
+      _openApp();
+    }
+  }
+
+  void _openApp() {
+    // Aquí abres tu aplicación o realizas cualquier otra acción necesaria
+  }
+
+  // Función para mostrar un diálogo si el usuario ha denegado permanentemente el permiso
+  Future<void> _showPermissionDeniedDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Permisos necesarios"),
+        content: Text("Esta aplicación necesita permisos de almacenamiento para funcionar."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _requestStoragePermission(); // Vuelve a solicitar permisos después de cerrar el diálogo
+            },
+            child: Text("Reintentar"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Cierra la aplicación si el usuario no acepta los permisos
+              SystemNavigator.pop();
+            },
+            child: Text("Salir"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -43,17 +102,17 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListView(
             children: <Widget>[
               UserAccountsDrawerHeader(
+                decoration: BoxDecoration(color: Colors.transparent),
                 accountName: Text('fabian ismael herrera koh'),
                 accountEmail: Text('splitter33@gmail.com'),
                 currentAccountPicture: Container(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: CircleAvatar (
-                    backgroundColor: Colors.white,
-                    radius: 50.0, // Ajusta el radio según sea necesario
-                    child: Icon(Icons.person, size: 50, color: Colors.blue),
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(50)
                   ),
-                  ),
+                child: Icon(Icons.person, size: 50, color: Colors.blue),
                   ),
                   ),
               ListTile(
@@ -115,13 +174,5 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(),
     );
-  }
-
-  Future<void> _requestStoragePermission() async {
-    var status = await Permission.storage.request();
-    if (status != PermissionStatus.granted) {
-      // Puedes mostrar un diálogo o mensaje al usuario para informar que se requieren permisos.
-      print("Permiso de almacenamiento no otorgado");
-    }
   }
 }

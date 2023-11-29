@@ -1,4 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--for android 13 and above-->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- For Images-->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEOS" /> <!-- For video-->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" /> <!-- For Audio-->
+
+    <!-- for below android 13-->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <application
         android:label="flamingo"
         android:name="${applicationName}"

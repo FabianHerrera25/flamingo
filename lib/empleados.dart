@@ -60,26 +60,27 @@ class EmpleadosListView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Detalles del Empleado'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Nombre: ${empleado.nombre}'),
-              Text('Apellido Paterno: ${empleado.apellidoPaterno}'),
-              Text('Apellido Materno: ${empleado.apellidoMaterno}'),
-              Text('Cargo: ${empleado.cargo}'),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cerrar'),
+        return Align(
+          alignment: Alignment.center,
+          child: SingleChildScrollView(
+            child: Container(
+              height: 200,
+              width: 300,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  const Text('Hola'),
+                  Text('Nombre: ${empleado.nombre}'),
+                  Text('Apellido Paterno: ${empleado.apellidoPaterno}'),
+                  Text('Apellido Materno: ${empleado.apellidoMaterno}'),
+                  Text('Cargo: ${empleado.cargo}'),
+                ],
+              ),
             ),
-          ],
+          ),
         );
       },
     );

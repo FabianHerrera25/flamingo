@@ -1,7 +1,7 @@
 // ignore: unnecessary_import
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'actividades.dart'; // Importa el archivo de detalles de tarea (tarea_detalle.dart)
+import 'actividades.dart';
 
 
 class TareasPage extends StatelessWidget {

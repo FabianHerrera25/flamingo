@@ -4,9 +4,6 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Inicio de Sesión'),
-      ),
       body: Stack(
         fit: StackFit.expand, // La imagen de fondo ocupa toda la pantalla
         children: [
@@ -14,7 +11,7 @@ class LoginPage extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/fondo_back.jpg'),
+                image: AssetImage('assets/fondo.jpg'),
                 fit: BoxFit.fill, // La imagen de fondo ocupa toda la pantalla
               ),
             ),

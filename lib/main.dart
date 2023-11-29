@@ -14,10 +14,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MyHomePage(),
+      home: LoginPage(), // Inicia con la página de inicio de sesión
     );
   }
 }
+/*class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: MyHomePage(),
+    );
+  }
+}*/
 
 class MyHomePage extends StatefulWidget {
   @override

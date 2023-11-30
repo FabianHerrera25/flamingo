@@ -6,157 +6,169 @@ class DetallesTareaPage extends StatelessWidget {
 
   DetallesTareaPage({required this.tarea});
 
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(
-        '${tarea.nombreActividad}',
-        style: TextStyle(fontWeight: FontWeight.bold),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          '${tarea.nombreActividad}',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252), // Color del borde
+),
+        ),
+        centerTitle: true,
+        backgroundColor: Color(0xFF4B9EDE),
       ),
-      centerTitle: true,
-    ),
-    body: Card(
-      margin: EdgeInsets.all(16.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: _buildInfoRow('Creador', tarea.usuarioCreador),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: _buildInfoRow('Fecha de Solicitud', tarea.fechaSolicitud),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: _buildInfoRow('Actividad Asignada', tarea.actividadAsignada),
-                  ),
-                  ],
-                ),
-                SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: _buildInfoRow('Encargado', tarea.usuarioEncargado),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: _buildInfoRow('Fecha de Entrega', tarea.fechaEntrega),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: _buildInfoRow('Estatus', tarea.estatus),
-                  ),
-                  ],
-                ),
-              ],
-              ),
-              Row(
-                children: [
-                  Flexible(
-                    child: Container(
-                      padding: EdgeInsets.all(8.0),
-                      margin: EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: _buildInfoRow('Descripción', tarea.descripcion),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Flexible(
-                    child: Container(
-                      padding: EdgeInsets.all(8.0),
-                      margin: EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: _buildInfoRow('Comentarios', tarea.comentarios),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: 300.0,
-                      maxHeight: 100.0,
-                    ),
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: _buildInfoRow('Comentarios', tarea.comentarios),
-                  ),
-                ],
-              ),
+              _buildInfoRow('Creador', tarea.usuarioCreador),
+              _buildInfoRow('Encargado', tarea.usuarioEncargado),
+              _buildDateRow('Fecha de Solicitud', tarea.fechaSolicitud),
+              _buildDateRow('Fecha de Entrega', tarea.fechaEntrega),
+              _buildInfoRow('Actividad Asignada', tarea.actividadAsignada),
+              _buildInfoRow('Estatus', tarea.estatus),
+              _buildDescriptionSection('Descripción', tarea.descripcion),
+              _buildDescriptionSection('Comentarios', tarea.comentarios),
             ],
+          ),
         ),
       ),
+    );
+  }
+
+ Widget _buildInfoRow(String label, String value) {
+  return Container(
+    margin: EdgeInsets.only(bottom: 16.0),
+    child: Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+             decoration: BoxDecoration(
+  borderRadius: BorderRadius.circular(8.0),
+  border: Border.all(
+    color: Color.fromARGB(255, 255, 255, 255), // Color del borde
+    width: 2.0,               // Ancho del borde
+  ),
+  color: Colors.white,        // Color de fondo del contenedor
+  boxShadow: [
+    BoxShadow(
+      color: Colors.grey.withOpacity(0.3), // Sombra suave para resaltar el contador
+      spreadRadius: 2.0,
+      blurRadius: 4.0,
+      offset: Offset(0, 2),
+    ),
+  ],
+),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                _getStatusWidget(value), // Cambiado para manejar el color del estatus
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _getStatusWidget(String status) {
+  Color statusColor;
+
+  switch (status.toLowerCase()) {
+    case 'en progreso':
+      statusColor = Colors.orange;
+      break;
+      case 'pendiente':
+      statusColor = Colors.blue;
+      break;
+    case 'completada':
+      statusColor = Colors.green;
+      break;
+    
+    default:
+      statusColor = Colors.black;
+  }
+
+  return Text(
+    status,
+    style: TextStyle(
+      color: statusColor,
     ),
   );
 }
 
 
-  Widget _buildInfoRow(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '$label:',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        Text(value),
-        SizedBox(height: 8), // Espaciado entre cada par de etiqueta y texto
-      ],
+
+  Widget _buildDateRow(String label, String value) {
+    return _buildInfoRow(label, _formatDate(value));
+  }
+
+  String _formatDate(String date) {
+    // Implement your date formatting logic here
+    return date;
+  }
+
+  Widget _buildDescriptionSection(String label, String value) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+  borderRadius: BorderRadius.circular(8.0),
+  border: Border.all(
+    color: Color.fromARGB(255, 255, 255, 255), // Color del borde
+    width: 2.0,               // Ancho del borde
+  ),
+  color: Colors.white,        // Color de fondo del contenedor
+  boxShadow: [
+    BoxShadow(
+      color: Colors.grey.withOpacity(0.3), // Sombra suave para resaltar el contador
+      spreadRadius: 2.0,
+      blurRadius: 4.0,
+      offset: Offset(0, 2),
+    ),
+  ],
+),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

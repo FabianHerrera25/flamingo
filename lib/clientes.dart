@@ -6,7 +6,13 @@ class ClientesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Clientes'),
+        title: Text(
+          'Lista de Clientes',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252), // Color del borde
+),
+        ),
+        centerTitle: true,
+        backgroundColor: Color(0xFF4B9EDE),
       ),
       body: ClientesListView(),
     );
@@ -117,37 +123,80 @@ class ClientesListView extends StatelessWidget {
   }
 
   void _mostrarDetallesCliente(BuildContext context, Cliente cliente) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Detalles de Cliente'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Nombre: ${cliente.nombre}'),
-              Text('Correo: ${cliente.correo}'),
-              Text('Teléfono: ${cliente.telefono}'),
-              Text('Celular: ${cliente.celular}'),
-              Text('Dirección: ${cliente.direccion}'),
-              Text('Persona: ${cliente.persona}'),
-              Text('RFC: ${cliente.rfc}'),
-              Text('Código Postal: ${cliente.codigoPostal}'),
-            ],
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          'Detalles de Cliente',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cerrar'),
-            ),
+        ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 12),
+            _buildDetailRow('Nombre', cliente.nombre),
+            _buildDetailRow('Correo', cliente.correo),
+            _buildDetailRow('Teléfono', cliente.telefono),
+            _buildDetailRow('Celular', cliente.celular),
+            _buildDetailRow('Dirección', cliente.direccion),
+            _buildDetailRow('Persona', cliente.persona),
+            _buildDetailRow('RFC', cliente.rfc),
+            _buildDetailRow('Código Postal', cliente.codigoPostal),
           ],
-        );
-      },
-    );
-  }
+        ),
+        actions: <Widget>[
+          _buildCloseButton(context),
+        ],
+      );
+    },
+  );
+}
+
+// Funciones adicionales
+
+Widget _buildDetailRow(String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 120,
+          child: Text(
+            '$label:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(value),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildCloseButton(BuildContext context) {
+  return TextButton(
+    onPressed: () {
+      Navigator.of(context).pop(); // Cerrar el diálogo
+    },
+    child: Text(
+      'Cerrar',
+      style: TextStyle(
+        color: Colors.red, // Personalizar el color según sea necesario
+      ),
+    ),
+  );
+}
+
+
 }
 
 class Cliente {

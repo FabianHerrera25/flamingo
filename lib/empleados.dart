@@ -5,9 +5,16 @@ class EmpleadosPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Lista de Empleados'),
+       appBar: AppBar(
+        title: Text(
+          'Lista de Empleados',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252), // Color del borde
+),
+        ),
+        centerTitle: true,
+        backgroundColor: Color(0xFF4B9EDE),
       ),
+     
       body: EmpleadosListView(),
     );
   }
@@ -55,36 +62,76 @@ class EmpleadosListView extends StatelessWidget {
     );
   }
 
-  void _mostrarDetallesEmpleado(BuildContext context, Empleado empleado) {
-    // Mostrar detalles del empleado en un modal
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Align(
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: Container(
-              height: 200,
-              width: 300,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  const Text('Hola'),
-                  Text('Nombre: ${empleado.nombre}'),
-                  Text('Apellido Paterno: ${empleado.apellidoPaterno}'),
-                  Text('Apellido Materno: ${empleado.apellidoMaterno}'),
-                  Text('Cargo: ${empleado.cargo}'),
-                ],
-              ),
+ void _mostrarDetallesEmpleado(BuildContext context, Empleado empleado) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          'Detalles de Empleado',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 12),
+            _buildDetailRow('Nombre', empleado.nombre),
+            _buildDetailRow('Apellido Paterno', empleado.apellidoPaterno),
+            _buildDetailRow('Apellido Materno', empleado.apellidoMaterno),
+            _buildDetailRow('Cargo', empleado.cargo),
+          ],
+        ),
+        actions: <Widget>[
+          _buildCloseButton(context),
+        ],
+      );
+    },
+  );
+}
+
+Widget _buildDetailRow(String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 100,
+          child: Text(
+            '$label:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+        Expanded(
+          child: Text(value),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildCloseButton(BuildContext context) {
+  return TextButton(
+    onPressed: () {
+      Navigator.of(context).pop(); // Close the dialog
+    },
+    child: Text(
+      'Cerrar',
+      style: TextStyle(
+        color: Colors.red, // Customize the color as needed
+      ),
+    ),
+  );
+}
+
+
+
 }
 
 class Empleado {

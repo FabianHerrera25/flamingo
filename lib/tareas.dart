@@ -9,8 +9,15 @@ class TareasPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Tareas'),
+        title: Text(
+          'Lista de Tareas',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252), // Color del borde
+),
+        ),
+        centerTitle: true,
+        backgroundColor: Color(0xFF4B9EDE),
       ),
+      
       body: TareasListView(),
     );
   }

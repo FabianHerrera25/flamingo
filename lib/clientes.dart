@@ -1,91 +1,47 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flamingo/login.dart';
 
 class ClientesPage extends StatelessWidget {
+  final ApiService apiService = ApiService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Lista de Clientes',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252), // Color del borde
-),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252)),
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF4B9EDE),
       ),
-      body: ClientesListView(),
+      body: FutureBuilder<List<Cliente>>(
+        future: apiService.fetchClientes(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            return ClientesListView(clientes: snapshot.data!);
+          }
+        },
+      ),
     );
   }
 }
 
 class ClientesListView extends StatelessWidget {
-  final List<Cliente> clientes = [
-    Cliente(
-      nombre: 'fabian ismael',
-      correo: 'correo1@example.com',
-      telefono: '1234567890',
-      celular: '9876543210',
-      direccion: 'calle 113 x 115 cinco colonias',
-      persona: 'fisica',
-      rfc: 'RFC123456',
-      codigoPostal: '12345',
-    ),
-    Cliente(
-      nombre: 'Juan Pérez',
-      correo: 'juanperez@example.com',
-      telefono: '1234567890',
-      celular: '9876543210',
-      direccion: 'Av. Principal #123',
-      persona: 'fisica',
-      rfc: 'RFC654321',
-      codigoPostal: '12345',
-    ),
+  final List<Cliente> clientes;
 
-    Cliente(
-      nombre: 'Carlos Sánchez',
-      correo: 'carlossanchez@example.com',
-      telefono: '1234567890',
-      celular: '9876543210',
-      direccion: 'Av. Principal #123',
-      persona: 'fisica',
-      rfc: 'RFC234567',
-      codigoPostal: '12345',
-    ),
-    Cliente(
-      nombre: 'María Rodríguez',
-      correo: 'mariarodriguez@example.com',
-      telefono: '1234567890',
-      celular: '9876543210',
-      direccion: 'Av. Principal #123',
-      persona: 'fisica',
-      rfc: 'RFC654321',
-      codigoPostal: '12345',
-    ),
-
-    Cliente(
-      nombre: 'Ana Gómez',
-      correo: 'anagomez@example.com',
-      telefono: '1234567890',
-      celular: '9876543210',
-      direccion: 'Av. Principal #123',
-      persona: 'fisica',
-      rfc: 'RFC567890',
-      codigoPostal: '12345',
-    ),
-
-    Cliente(
-      nombre: 'Jorge López',
-      correo: 'jorgelopez@example.com',
-      telefono: '1234567890',
-      celular: '9876543210',
-      direccion: 'Av. Principal #901',
-      persona: 'fisica',
-      rfc: 'RFC123890',
-      codigoPostal: '12345',
-    ),
-    // Agrega más clientes aquí
-  ];
+  ClientesListView({required this.clientes});
 
   @override
   Widget build(BuildContext context) {
@@ -139,22 +95,23 @@ class ClientesListView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(height: 12),
-            _buildDetailRow('Nombre', cliente.nombre),
-            _buildDetailRow('Correo', cliente.correo),
-            _buildDetailRow('Teléfono', cliente.telefono),
-            _buildDetailRow('Celular', cliente.celular),
-            _buildDetailRow('Dirección', cliente.direccion),
-            _buildDetailRow('Persona', cliente.persona),
-            _buildDetailRow('RFC', cliente.rfc),
-            _buildDetailRow('Código Postal', cliente.codigoPostal),
+              _buildDetailRow('Nombre: ${cliente.nombre}'),
+              _buildDetailRow('Apellido Paterno: ${cliente.apellidoPaterno}'),
+              _buildDetailRow('Apellido Materno: ${cliente.apellidoMaterno}'),
+              _buildDetailRow('Correo: ${cliente.correo}'),
+              _buildDetailRow('Teléfono: ${cliente.telefono}'),
+              _buildDetailRow('Celular: ${cliente.celular}'),
+              _buildDetailRow('Dirección: ${cliente.direccion}'),
+              _buildDetailRow('Estatus: ${cliente.estatus}'),
           ],
         ),
         actions: <Widget>[
           _buildCloseButton(context),
-        ],
-      );
-    },
-  );
+          ],
+        );
+      },
+    );
+  }
 }
 
 // Funciones adicionales
@@ -201,22 +158,58 @@ Widget _buildCloseButton(BuildContext context) {
 
 class Cliente {
   final String nombre;
+  final String apellidoPaterno;
+  final String apellidoMaterno;
   final String correo;
   final String telefono;
   final String celular;
   final String direccion;
-  final String persona;
-  final String rfc;
-  final String codigoPostal;
+  final String estatus;
 
   Cliente({
     required this.nombre,
+    required this.apellidoPaterno,
+    required this.apellidoMaterno,
     required this.correo,
     required this.telefono,
     required this.celular,
     required this.direccion,
-    required this.persona,
-    required this.rfc,
-    required this.codigoPostal,
+    required this.estatus,
   });
+
+  factory Cliente.fromJson(Map<String, dynamic> json) {
+    return Cliente(
+      nombre: json['nombre'],
+      apellidoPaterno: json['apellidoPaterno'],
+      apellidoMaterno: json['apellidoMaterno'],
+      correo: json['correo'],
+      telefono: json['telefono'],
+      celular: json['celular'],
+      direccion: json['direccion'],
+      estatus: json['estatus'],
+    );
+  }
+}
+
+class ApiService {
+  Map<String, String> get headers => {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer ${AuthService.token}",
+      };
+
+  Future<List<Cliente>> fetchClientes() async {
+    var url = "http://flamingosoftapi.somee.com/api/Clientes?estatus=A";
+    var response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      List<Cliente> clientes =
+          data.map((json) => Cliente.fromJson(json)).toList();
+      return clientes;
+    } else {
+      throw Exception(
+          "Request to $url failed with status ${response.statusCode}: ${response.body}");
+    }
+  }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'tareas.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flamingo/login.dart';
 
 class DetallesTareaPage extends StatelessWidget {
   final Tarea tarea;
@@ -11,7 +14,7 @@ class DetallesTareaPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${tarea.nombreActividad}',
+          '${tarea.actividad}',
           style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252), // Color del borde
 ),
         ),
@@ -24,14 +27,13 @@ class DetallesTareaPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildInfoRow('Creador', tarea.usuarioCreador),
-              _buildInfoRow('Encargado', tarea.usuarioEncargado),
-              _buildDateRow('Fecha de Solicitud', tarea.fechaSolicitud),
-              _buildDateRow('Fecha de Entrega', tarea.fechaEntrega),
-              _buildInfoRow('Actividad Asignada', tarea.actividadAsignada),
-              _buildInfoRow('Estatus', tarea.estatus),
-              _buildDescriptionSection('Descripción', tarea.descripcion),
-              _buildDescriptionSection('Comentarios', tarea.comentarios),
+              _buildInfoRow('Usuario creador: ${tarea.creador}'),
+              _buildInfoRow('Usuario encargado: ${tarea.encargado}'),
+              _buildInfoRow('Fecha de Solicitud: ${tarea.fechaSolicitud}'),
+              _buildInfoRow('Fecha de Entrega: ${tarea.fechaEntrega}'),
+              _buildInfoRow('Actividad: ${tarea.actividad}'),
+              _buildInfoRow('Cliente: ${tarea.cliente}'),
+              _buildInfoRow('Estatus: ${tarea.estatus}'),
             ],
           ),
         ),

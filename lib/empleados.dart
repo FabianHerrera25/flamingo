@@ -1,26 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flamingo/login.dart';
 
 class EmpleadosPage extends StatelessWidget {
+  final ApiService apiService = ApiService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         title: Text(
           'Lista de Empleados',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252), // Color del borde
-),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252)),
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF4B9EDE),
       ),
-     
-      body: EmpleadosListView(),
+      body: FutureBuilder<List<Empleado>>(
+        future: apiService.fetchEmpleados(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            return EmpleadosListView(empleados: snapshot.data!);
+          }
+        },
+      ),
     );
   }
 }
 
 class EmpleadosListView extends StatelessWidget {
+  final List<Empleado> empleados;
+
+  EmpleadosListView({required this.empleados});
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -79,10 +100,10 @@ class EmpleadosListView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(height: 12),
-            _buildDetailRow('Nombre', empleado.nombre),
-            _buildDetailRow('Apellido Paterno', empleado.apellidoPaterno),
-            _buildDetailRow('Apellido Materno', empleado.apellidoMaterno),
-            _buildDetailRow('Cargo', empleado.cargo),
+            _buildDetailRow('Nombre: ${empleado.nombre}'),
+            _buildDetailRow('Apellido Paterno: ${empleado.apellidoPaterno}'),
+            _buildDetailRow('Apellido Materno: ${empleado.apellidoMaterno}'),
+            _buildDetailRow('cargo: ${empleado.cargo}'),
           ],
         ),
         actions: <Widget>[
@@ -146,7 +167,17 @@ class Empleado {
     required this.apellidoMaterno,
     required this.cargo,
   });
+
+  factory Empleado.fromJson(Map<String, dynamic> json) {
+    return Empleado(
+      nombre: json['nombre'],
+      apellidoPaterno: json['apellidoPaterno'],
+      apellidoMaterno: json['apellidoMaterno'],
+      cargo: json['cargo'],
+    );
+  }
 }
+
 
 final List<Empleado> empleados = [
   Empleado(
@@ -155,11 +186,30 @@ final List<Empleado> empleados = [
     apellidoMaterno: 'Lopez',
     cargo: 'Gerente',
   ),
-  Empleado(
-    nombre: 'Maria',
-    apellidoPaterno: 'Gonzalez',
-    apellidoMaterno: 'Lopez',
-    cargo: 'Desarrollador',
-  ),
+  
   // Agregar más empleados aquí
 ];
+
+class ApiService {
+  Map<String, String> get headers => {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer ${AuthService.token}",
+      };
+
+  Future<List<Empleado>> fetchEmpleados() async {
+    var url = "http://flamingosoftapi.somee.com/api/Empleados?estatus=A";
+    var response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      List<Empleado> empleados =
+          data.map((json) => Empleado.fromJson(json)).toList();
+      return empleados;
+    } else {
+      throw Exception(
+          "Request to $url failed with status ${response.statusCode}: ${response.body}");
+    }
+  }
+}
+

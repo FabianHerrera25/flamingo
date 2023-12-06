@@ -2,66 +2,52 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'actividades.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flamingo/login.dart';
 
 class TareasPage extends StatelessWidget {
+  final ApiService apiService = ApiService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Lista de Tareas',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromARGB(255, 252, 252, 252), // Color del borde
-),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 252, 252, 252), // Color del borde
+          ),
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF4B9EDE),
       ),
-      
-      body: TareasListView(),
+      body: FutureBuilder<List<Tarea>>(
+        future: apiService.fetchTareas(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            return TareasListView(tareas: snapshot.data!);
+          }
+        },
+      ),
     );
   }
 }
 
+
 class TareasListView extends StatelessWidget {
-  final List<Tarea> tareas = [
-    Tarea(
-      nombreActividad: 'Actividad de prueba',
-      usuarioCreador: 'Juan Pérez',
-      usuarioEncargado: 'María Rodríguez',
-      fechaSolicitud: '2023-10-15',
-      fechaEntrega: '2023-10-20',
-      comentarios: 'Realizar la actividad de prueba.',
-      estatus: 'Pendiente',
-      actividadAsignada: 'Actividad de prueba',
-      descripcion: 'Esta es la descripción de la actividad de prueba.',
-    ),
-    Tarea(
-      nombreActividad: 'Informe final',
-      usuarioCreador: 'Carlos Sánchez',
-      usuarioEncargado: 'Ana Gómez',
-      fechaSolicitud: '2023-10-16',
-      fechaEntrega: '2023-10-22',
-      comentarios: 'Revisar el informe y realizar correcciones.',
-      estatus: 'En progreso',
-      actividadAsignada: 'Informe final',
-      descripcion: 'Este es el informe final del proyecto.',
-    ),
-    Tarea(
-      nombreActividad: 'Diseño de producto',
-      usuarioCreador: 'Jorge López',
-      usuarioEncargado: 'Isabel Torres',
-      fechaSolicitud: '2023-10-18',
-      fechaEntrega: '2023-10-25',
-      comentarios: 'Revisar y aprobar el diseño del nuevo producto.',
-      estatus: 'Completada',
-      actividadAsignada: 'Diseño de producto',
-      descripcion: 'Diseño del producto XYZ para el lanzamiento.',
-    ),
-    // Agrega más tareas aquí
-  ];
+  final List<Tarea> tareas;
 
-
+  TareasListView({required this.tareas});
   
   @override
   Widget build(BuildContext context){
@@ -79,13 +65,13 @@ class TareasListView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${tarea.nombreActividad}', style: TextStyle(
+                  '${tarea.actividad}', style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
               ),
               Text(
-                '${tarea.usuarioEncargado}', style: TextStyle(
+                '${tarea.encargado}', style: TextStyle(
                 color: Colors.white,
               ),
               )
@@ -106,25 +92,55 @@ class TareasListView extends StatelessWidget {
 }
 
 class Tarea {
-  final String nombreActividad;
-  final String usuarioCreador;
-  final String usuarioEncargado;
+  final String creador;
+  final String encargado;
   final String fechaSolicitud;
   final String fechaEntrega;
-  final String comentarios;
+  final String actividad;
+  final String cliente;
   final String estatus;
-  final String actividadAsignada;
-  final String descripcion;
 
   Tarea({
-    required this.nombreActividad,
-    required this.usuarioCreador,
-    required this.usuarioEncargado,
+    required this.creador,
+    required this.encargado,
     required this.fechaSolicitud,
     required this.fechaEntrega,
-    required this.comentarios,
+    required this.actividad,
+    required this.cliente,
     required this.estatus,
-    required this.actividadAsignada,
-    required this.descripcion,
   });
+
+  factory Tarea.fromJson(Map<String, dynamic> json) {
+    return Tarea(
+      creador: json['creador'] ?? '',
+      encargado: json['encargado'] ?? '',
+      fechaSolicitud: json['fechaSolicitud'] ?? '',
+      fechaEntrega: json['fechaEntrega'] ?? '',
+      actividad: json['actividad'] ?? '',
+      cliente: json['cliente'] ?? '',
+      estatus: json['estatus'] ?? '',
+    );
+  }
+}
+
+class ApiService {
+  Map<String, String> get headers => {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer ${AuthService.token}",
+      };
+
+  Future<List<Tarea>> fetchTareas() async {
+    var url = "http://flamingosoftapi.somee.com/api/Tareas?status=T";
+    var response = await http.get(Uri.parse(url), headers: headers);
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      List<Tarea> tareas = data.map((json) => Tarea.fromJson(json)).toList();
+      return tareas;
+    } else {
+      throw Exception(
+          "Request to $url failed with status ${response.statusCode}: ${response.body}");
+    }
+  }
 }
